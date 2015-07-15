@@ -26,7 +26,11 @@ oses:
 <%# This template will not function with Safemode set to true.
     Please disable it in Settings > Provisioning               %>
 
+<% if (@host.operatingsystem.name == 'Fedora' and @host.operatingsystem.major.to_i > 16) or (@host.operatingsystem.name != 'Fedora' and @host.operatingsystem.major.to_i >= 7) -%>
+kernel <%= "#{@host.url_for_boot(:kernel)}" %> inst.ks=<%= foreman_url('provision')%><%= static %> bootif=<%= @host.mac %> inst.ks.sendmac ip=${netX/ip}::${netX/gateway}::${netX/netmask}:::none nameserver=${dns}
+<% else -%>
 kernel <%= "#{@host.url_for_boot(:kernel)}" %> ks=<%= foreman_url('provision')%><%= static %> ksdevice=<%= @host.mac %> network kssendmac ip=${netX/ip} netmask=${netX/netmask} gateway=${netX/gateway} dns=${dns}
+<% end -%>
 initrd <%= "#{@host.url_for_boot(:initrd)}" %>
 
 boot

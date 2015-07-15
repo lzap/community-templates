@@ -36,13 +36,11 @@ DEFAULT linux
 
 LABEL linux
     KERNEL <%= @kernel %>
-    <% if @host.operatingsystem.name.match(/.*atomic.*/i) %>
+    <% if (@host.operatingsystem.name == 'Fedora' and @host.operatingsystem.major.to_i > 16) or (@host.operatingsystem.name != 'Fedora' and @host.operatingsystem.major.to_i >= 7) -%>
+    APPEND initrd=<%= @initrd %> inst.ks=<%= foreman_url('provision')%> inst.ks.sendmac <%= options %>
+    <% elsif @host.operatingsystem.name.match(/.*atomic.*/i) %>
     APPEND initrd=<%= @initrd %> ks=<%= foreman_url('provision') %> repo=<%= @host.operatingsystem.medium_uri(@host) %> ks.device=bootif network ks.sendmac <%= options %>
-    <% elsif @host.operatingsystem.name == 'Fedora' and @host.operatingsystem.major.to_i > 16 -%>
-    APPEND initrd=<%= @initrd %> ks=<%= foreman_url('provision')%> ks.device=bootif network ks.sendmac <%= options %>
-    <% elsif @host.operatingsystem.name != 'Fedora' and @host.operatingsystem.major.to_i >= 7 -%>
-    APPEND initrd=<%= @initrd %> ks=<%= foreman_url('provision')%> network ks.sendmac <%= options %>
     <% else -%>
-    APPEND initrd=<%= @initrd %> ks=<%= foreman_url('provision')%> ksdevice=bootif network kssendmac <%= options %>
+    APPEND initrd=<%= @initrd %> ks=<%= foreman_url('provision')%> kssendmac network <%= options %>
     <% end -%>
     IPAPPEND 2
