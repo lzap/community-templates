@@ -1,0 +1,52 @@
+<%#
+name: Rediscover node
+model: JobTemplate
+job_category: Discovery
+description_format: Writes grub2 configuration with "Rediscover host" entry.
+snippet: false
+template_inputs:
+- name: boot_interface
+  description: Boot interface MAC address (interactive TUI when blank)
+  required: false
+  input_type: user
+- name: set_default
+  description: Set as the default boot item (set to non-blank value)
+  required: false
+  input_type: user
+  options: "yes"
+- name: reboot
+  description: Reboot immediately (set to non-blank value)
+  required: false
+  input_type: user
+  options: "yes"
+provider_type: SSH
+kind: job_template
+%>
+
+# This template requires two symlinks to be present on Foreman server:
+# ln -s /var/lib/tftpboot/boot/fdi-image/vmlinuz0 /var/www/html/pub/discovery-vmlinuz
+# ln -s /var/lib/tftpboot/boot/fdi-image/initrd0.img /var/www/html/pub/discovery-initrd.img
+
+cat >/etc/grub.d/90_discovery <<EODS
+wget -qNP /boot/ <%= foreman_server_url %>/pub/discovery-vmlinuz
+wget -qNP /boot/ <%= foreman_server_url %>/pub/discovery-initrd.img
+cat <<'EOM'
+menuentry "Rediscover host" {
+  search --file --no-floppy --set=discovery_root /discovery-vmlinuz
+  linux (\$discovery_root)/discovery-vmlinuz rootflags=loop root=live:/fdi.iso rootfstype=auto ro rd.live.image acpi=force rd.luks=0 rd.md=0 rd.dm=0 rd.lvm=0 rd.bootif=0 rd.neednet=0 nomodeset proxy.url=<%= foreman_server_url %> proxy.type=foreman fdi.pxmac=<%= input("boot_interface") %> fdi.pxauto=1
+  initrd (\$discovery_root)/discovery-initrd.img
+}
+EOM
+EODS
+
+chmod +x /etc/grub.d/90_discovery
+grub2-mkconfig -o /boot/grub2/grub.cfg
+sync
+
+<% if input("set_default") == "yes" -%>
+  grub2-set-default "Rediscover host"
+<% end -%>
+
+<% if input("reboot") == "yes" -%>
+  reboot
+<% end -%>
