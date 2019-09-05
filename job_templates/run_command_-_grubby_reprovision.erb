@@ -1,0 +1,28 @@
+<%#
+kind: job_template
+name: Run Command - Grubby Reprovision
+model: JobTemplate
+job_category: Commands
+provider_type: SSH
+%>
+<%
+  if @host.build?
+-%>
+set -e
+KERNEL="/boot/grubby-reporovision-kernel"
+INITRD="/boot/grubby-reporovision-initrd.img"
+wget -O "$KERNEL" "<%= @host.url_for_boot(:kernel) %>"
+wget -O "$INITRD" "<%= @host.url_for_boot(:initrd) %>"
+grubby --add-kernel=$KERNEL --initrd=$INITRD --copy-default \
+  --title "Grubby reprovision <%= @host.operatingsystem %>" \
+  --make-default \
+  --args="ks=<%= foreman_url('provision')%>"
+shutdown -r +1
+<%
+  else
+-%>
+echo Host not in build mode
+false
+<%
+  end
+-%>
