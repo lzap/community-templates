@@ -4,8 +4,8 @@ name: pxegrub2_mac
 model: ProvisioningTemplate
 snippet: true
 -%>
-echo "Trying /httpboot/grub2/grub.cfg-$net_default_mac"
-configfile "/httpboot/grub2/grub.cfg-$net_default_mac"
+echo "Trying /EFI/BOOT/grub2/grub.cfg-$net_default_mac"
+configfile "/EFI/BOOT/grub2/grub.cfg-$net_default_mac"
 
 echo "Trying /grub2/grub.cfg-$net_default_mac"
 configfile "/grub2/grub.cfg-$net_default_mac"

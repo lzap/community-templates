@@ -31,8 +31,8 @@ menuentry '<%= template_name %>' {
 }
 
 menuentry '<%= template_name %> HTTP Boot' {
-  <%= linuxcmd %> /httpboot/<%= @kernel %> ks=<%= foreman_url('provision') %> <%= pxe_kernel_options %> <%= snippet("kickstart_kernel_options").strip %> BOOTIF=01-$net_default_mac
-  <%= initrdcmd %> /httpboot/<%= @initrd %>
+  <%= linuxcmd %> /EFI/BOOT/<%= @kernel %> ks=<%= foreman_url('provision') %> <%= pxe_kernel_options %> <%= snippet("kickstart_kernel_options").strip %> BOOTIF=01-$net_default_mac
+  <%= initrdcmd %> /EFI/BOOT/<%= @initrd %>
 }
 
 <%= snippet_if_exists(template_name + " custom menu") %>
