@@ -50,13 +50,13 @@ end
 
 liveimg --url=<%= liveimg_url %>
 
-<% subnet = @host.subnet -%>
+<% subnet = @host.provision_interface.subnet -%>
 <% if subnet.respond_to?(:dhcp_boot_mode?) -%>
 <% dhcp = subnet.dhcp_boot_mode? && !@static -%>
 <% else -%>
 <% dhcp = !@static -%>
 <% end -%>
-network --bootproto <%= dhcp ? 'dhcp' : "static --ip=#{@host.ip} --netmask=#{subnet.mask} --gateway=#{subnet.gateway} --nameserver=#{subnet.dns_servers.join(',')}" %> --hostname <%= @host %> --device=<%= @host.mac -%>
+network --bootproto <%= dhcp ? 'dhcp' : "static --ip=#{@host.provision_interface.ip} --netmask=#{subnet.mask} --gateway=#{subnet.gateway} --nameserver=#{subnet.dns_servers.join(',')}" %> --hostname <%= @host %> --device=<%= @host.provision_interface.mac -%>
 
 rootpw --iscrypted <%= root_pass %>
 <% if host_param_true?('disable-firewall') -%>
@@ -76,7 +76,11 @@ reboot
 %post --log=/root/ks.post.log --erroronfail
 nodectl init
 <%= snippet 'redhat_register' %>
+<% if host_enc['parameters']['realm'] && @host.realm && (@host.realm.realm_type == 'FreeIPA' || @host.realm.realm_type == 'Red Hat Identity Management') -%>
+<%= snippet 'freeipa_register' %>
+<% end -%>
 <%= snippet 'kickstart_networking_setup' %>
+<%= snippet('remote_execution_ssh_keys') %>
 <%= snippet 'efibootmgr_netboot' %>
 /usr/sbin/ntpdate -sub <%= host_param('ntp-server') || '0.fedora.pool.ntp.org' %>
 /usr/sbin/hwclock --systohc

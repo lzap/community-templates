@@ -10,5 +10,5 @@ DEFAULT rhvh
 
 LABEL rhvh
 KERNEL <%= @kernel %>
-APPEND initrd=<%= @initrd %> inst.ks=<%= foreman_url("provision") %> inst.stage2=<%= medium_uri %> local_boot_trigger=<%= foreman_url("built") %> intel_iommu=on
+APPEND initrd=<%= @initrd %> <%= pxe_kernel_options %> <%= snippet("kickstart_kernel_options").strip %> ks=<%= foreman_url("provision") %> local_boot_trigger=<%= foreman_url("built") %>
 IPAPPEND 2
