@@ -76,6 +76,14 @@ runcmd:
 - |
 <%= indent(2) { snippet('saltstack_setup') } %>
 <% end -%>
+- |
+<%=
+  if rhel_compatible && !host_param_false?('cloudinit-networking')
+    indent(2) { snippet 'kickstart_networking_setup' }
+  else
+    indent(2) { snippet 'preseed_networking_setup' }
+  end
+%>
 
 <%# Contact Foreman to confirm instance is built -%>
 phone_home:
