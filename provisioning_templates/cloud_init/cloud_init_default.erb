@@ -48,7 +48,7 @@ runcmd:
 - |
 <%= indent(2) { snippet 'remote_execution_ssh_keys' } %>
 - |
-<%= indent(2) { snippet 'blacklist_kernel_modules' } %>
+<%= indent(2) { snippet 'blocklist_kernel_modules' } %>
 - |
 <% if chef_enabled %>
 <%= indent(2) { snippet 'chef_client' } %>

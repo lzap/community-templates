@@ -24,7 +24,7 @@ echo 'root:<%= root_pass -%>' | /usr/sbin/chpasswd -e
 
 <%= snippet('remote_execution_ssh_keys') %>
 
-<%= snippet "blacklist_kernel_modules" %>
+<%= snippet "blocklist_kernel_modules" %>
 
 <% if puppet_enabled %>
 <% if host_param_true?('enable-puppetlabs-puppet6-repo') || host_param_true?('enable-puppetlabs-puppet5-repo') -%>

@@ -19,9 +19,10 @@ oses:
 #
 <%
   options = []
-  if host_param('blacklist')
-    options << host_param('blacklist').split(',').collect{|x| "#{x.strip}.blacklist=yes"}.join(' ')
+  if host_param('blocklist_kernel_modules')
+    options << host_param('blocklist_kernel_modules').split(%r{,\s*}).collect{|x| "#{x.strip}.blacklist=yes"}.join(' ')
   end
+  raise("Host param 'blacklist' has been deprecated, use 'blocklist_kernel_modules' instead") if host_param('blacklist')
   if @host.operatingsystem.name == 'Debian'
     options << "auto=true"
     options << "domain=#{@host.domain}"

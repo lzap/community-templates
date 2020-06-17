@@ -1,0 +1,11 @@
+<%#
+kind: snippet
+name: blocklist_kernel_modules
+model: ProvisioningTemplate
+snippet: true
+%>
+<% if host_param('blocklist_kernel_modules') -%>
+  <% host_param('blocklist_kernel_modules').split.each do |mod| -%>
+    echo "blacklist <%= mod %>" >> /etc/modprobe.d/blocklist.conf
+  <% end -%>
+<% end -%>
